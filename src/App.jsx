@@ -1,23 +1,87 @@
+import React, { useState, useEffect } from 'react';
 import Header from "./components/Header";
 import ProductList from "./components/ProductList";
+import CartSidebar from "./components/CartSidebar";
+import SearchOverlay from "./components/SearchOverlay"
 
-const products = [
-  { id: '1', name: 'Ebook - Guia Completo de JS', price: 29.90, imageUrl: 'https://th.bing.com/th/id/R.1feaba51b4877c18eca84eb5a174572e?rik=PbkToaMUpEhU%2fA&pid=ImgRaw&r=0' },
-  { id: '2', name: 'Template HTML/CSS Profissional', price: 49.99, imageUrl: 'https://tse4.mm.bing.net/th/id/OIP.S-sXozyvtrUrtTzemQXpFwHaEK?rs=1&pid=ImgDetMain&o=7&rm=3' },
-  { id: '3', name: 'Pack de Sons para Jogos', price: 79.00, imageUrl: 'https://tecnoblog.net/wp-content/uploads/2019/09/minecraft-001.jpg' },
-];
 
 function App() {
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isSearchOverlayOpen, setIsSearchOverlayOpen] = useState(false);
+  const [products, setProducts] = useState([]); // Novo estado para armazenar os produtos da API
+  const [loading, setLoading] = useState(true); // Estado para indicar que os dados estão sendo carregados
+  const [error, setError] = useState(null); // Estado para lidar com erros na requisição
+ 
+  // Novo estado para o overlay de busca
+  // Função para buscar os produtos do backend
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response =  await fetch('http://localhost:3000/api/products'); // URL da sua API de produtos
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setProducts(data); // Atualiza o estado 'products' com os dados da API
+      } catch (err) {
+        console.error("Erro ao buscar produtos:", err);
+        setError("Não foi possível carregar os produtos. Tente novamente mais tarde.");
+      } finally {
+        setLoading(false); // Finaliza o estado de carregamento
+      }
+    };
+
+    fetchProducts(); // Chama a função quando o componente é montado
+  }, []); // O array vazio [] garante que o useEffect rode apenas uma vez (no componentDidMount)
+
+
+  const handleOpenCart = () => {
+    setIsCartOpen(true);
+    setIsSearchOverlayOpen(false); // Garante que o overlay de busca fecha se o carrinho abrir
+  };
+
+  const handleCloseCart = () => {
+    setIsCartOpen(false);
+  };
+
+  const handleOpenSearchOverlay = () => {
+    setIsSearchOverlayOpen(true);
+  };
+
+  const handleCloseSearchOverlay = () => {
+    setIsSearchOverlayOpen(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-100 text-gray-800 text-2xl">
+        Carregando produtos...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-red-100 text-red-800 text-xl p-4">
+        Erro: {error}
+      </div>
+    );
+  }
 
   return (
     <>
-      < Header />
-      <main>
-        <h2>Nossos Produtos Digitais</h2>
+      {/* Passa as funções para o Header e SearchBar */}
+      <Header onOpenCart={handleOpenCart} onOpenSearch={handleOpenSearchOverlay} onCloseSearch={handleCloseSearchOverlay} /> 
+      <main className="container mx-auto p-4 bg-blue-100 min-h-screen">
+
         <ProductList products={products} />
       </main>
+
+      <CartSidebar isOpen={isCartOpen} onClose={handleCloseCart} />
+      {/* Renderiza o SearchOverlay condicionalmente */}
+      <SearchOverlay isOpen={isSearchOverlayOpen} onClick={handleCloseSearchOverlay} />
     </>
-  )
+  );
 }
 
 export default App;
