@@ -1,5 +1,6 @@
 // src/components/Header.jsx
 import React from 'react';
+import { Link } from 'react-router-dom';
 import SearchBar from './SearchBar';
 import { ShoppingCartIcon } from '@heroicons/react/24/outline';
 
@@ -10,7 +11,7 @@ function Header({ onOpenCart, onOpenSearch, onCloseSearch }) {
       {/* Seção 1: Logo */}
       <div className="flex-shrink-0">
         <h1 className="text-3xl font-extrabold tracking-tight">
-          Wear
+         <Link to="/" className="hover:text-blue-400 transition duration-300">Wear</Link> {/* Use Link to="/" */}
         </h1>
       </div>
 
@@ -18,9 +19,7 @@ function Header({ onOpenCart, onOpenSearch, onCloseSearch }) {
       <nav className="hidden sm:flex justify-center flex-1">
         <ul className="flex space-x-6 text-lg">
           <li>
-            <a href="/categorias" className="hover:text-blue-400 transition duration-300">
-              Categorias
-            </a>
+            <Link to="/categorias" className="hover:text-blue-400 transition duration-300">Categorias</Link>
           </li>
           <li>
             <button
@@ -31,6 +30,7 @@ function Header({ onOpenCart, onOpenSearch, onCloseSearch }) {
               <ShoppingCartIcon className="h-5 w-5" />
               
             </button>
+            {/* <Link to="/carrinho" className="hover:text-blue-400 transition duration-300">Carrinho</Link> */}
           </li>
         </ul>
       </nav>

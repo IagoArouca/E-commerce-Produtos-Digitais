@@ -1,8 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 import Header from "./components/Header";
 import ProductList from "./components/ProductList";
 import CartSidebar from "./components/CartSidebar";
 import SearchOverlay from "./components/SearchOverlay"
+
+const CategoriesPage = () => (
+  <div className="container mx-auto p-8 text-center min-h-screen bg-gray-100">
+    <h2 className="text-4xl font-bold text-gray-800 mb-4">Página de Categorias</h2>
+    <p className="text-lg text-gray-600">Aqui você verá as categorias de produtos. Em breve, mais conteúdo!</p>
+  </div>
+);
+
+const CartPage = () => (
+  <div className="container mx-auto p-8 text-center min-h-screen bg-gray-100">
+    <h2 className="text-4xl font-bold text-gray-800 mb-4">Página do Carrinho</h2>
+    <p className="text-lg text-gray-600">Esta é a página dedicada ao carrinho. O carrinho lateral já mostra seus itens!</p>
+  </div>
+);
 
 
 function App() {
@@ -115,22 +131,35 @@ function App() {
 
   return (
     <>
-      {/* Passa as funções para o Header e SearchBar */}
+      <Router> {/* O Router envolve toda a aplicação que usará rotas */}
       <Header onOpenCart={handleOpenCart} onOpenSearch={handleOpenSearchOverlay} onCloseSearch={handleCloseSearchOverlay} /> 
-      <main className="container mx-auto p-4 bg-blue-100 min-h-screen">
+      
+      {/* Aqui definimos nossas rotas */}
+      <Routes>
+        <Route 
+          path="/" 
+          element={
+            <main className="container mx-auto p-4 bg-gray-100 min-h-screen">
+              <h2 className="text-3xl font-bold text-center my-8 text-gray-800">Nossos Produtos Digitais</h2>
+              <ProductList products={products} onAddToCart={handleAddToCart} />
+            </main>
+          } 
+        />
+        <Route path="/categorias" element={<CategoriesPage />} /> {/* Rota para Categorias */}
+        <Route path="/carrinho" element={<CartPage />} />       {/* Rota para Carrinho */}
+        {/* Futuramente: <Route path="/produtos/:id" element={<ProductDetailPage />} /> */}
+      </Routes>
 
-        <ProductList products={products} onAddToCart={handleAddToCart} />
-      </main>
-
-      <CartSidebar
-      isOpen={isCartOpen}
-      onClose={handleCloseCart} 
-      cartItems={cartItems}
-      onRemoveItem={handleRemoveFromCart}
-      onUpdateQuantity={handleUpdateQuantity}
-      onCheckout={handleCheckout} />
-      {/* Renderiza o SearchOverlay condicionalmente */}
+      <CartSidebar 
+        isOpen={isCartOpen} 
+        onClose={handleCloseCart} 
+        cartItems={cartItems} 
+        onRemoveItem={handleRemoveFromCart} 
+        onUpdateQuantity={handleUpdateQuantity}
+        onCheckout={handleCheckout} 
+      />
       <SearchOverlay isOpen={isSearchOverlayOpen} onClick={handleCloseSearchOverlay} />
+    </Router>
     </>
   );
 }
