@@ -10,7 +10,7 @@ function Header({ onOpenCart, onOpenSearch, onCloseSearch }) {
       {/* Seção 1: Logo */}
       <div className="flex-shrink-0">
         <h1 className="text-3xl font-extrabold tracking-tight">
-          <a href="/" className="hover:text-blue-400 transition duration-300">Digital Store</a>
+          Wear
         </h1>
       </div>
 

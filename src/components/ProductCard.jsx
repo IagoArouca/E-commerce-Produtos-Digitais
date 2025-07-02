@@ -1,13 +1,13 @@
 // src/components/ProductCard.jsx
 import React from 'react';
 
-function ProductCard({ product }) {
+function ProductCard({ product, onAddToCart }) {
   if (!product || !product.name || !product.price || !product.imageUrl) {
     return <p className="text-center text-red-500">Produto inválido ou incompleto.</p>;
   }
 
   const handleAddToCart = () => {
-    alert(`"${product.name}" adicionado ao carrinho!`);
+    onAddToCart(product);
   };
 
   return (
