@@ -27,7 +27,22 @@ function App() {
   const [products, setProducts] = useState([]); // Novo estado para armazenar os produtos da API
   const [loading, setLoading] = useState(true); // Estado para indicar que os dados estão sendo carregados
   const [error, setError] = useState(null); // Estado para lidar com erros na requisição
-  const [cartItems, setCartItems] = useState([]);
+
+  // Inicializa cartItems tentando carregar do LocalStorage
+  const [cartItems, setCartItems] = useState(() => {
+    try {
+      const storedCartItems = localStorage.getItem('cartItems');
+      return storedCartItems ? JSON.parse(storedCartItems) : [];
+    } catch (e) {
+      console.error("Erro ao carregar carrinho do LocalStorage:", e);
+      return []; // Retorna vazio em caso de erro
+    }
+  });
+
+  // Efeito para salvar cartItems no LocalStorage toda vez que ele mudar
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  }, [cartItems]); // Dependência: roda toda vez que cartItems mudar
  
   // Novo estado para o overlay de busca
   // Função para buscar os produtos do backend
