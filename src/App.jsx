@@ -1,4 +1,5 @@
 // src/App.jsx
+// src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
@@ -10,9 +11,16 @@ import SearchOverlay from "./components/SearchOverlay";
 
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
-
-// NOVO: Importe o ProtectedRoute
 import ProtectedRoute from './components/ProtectedRoute'; 
+
+import AdminRoute from './components/AdminRoute'; // NOVO
+import AdminDashboardPage from './pages/AdminDashboardPage'; // NOVO
+
+
+// =========================================================
+// VERIFIQUE SE ESTES COMPONENTES TEMPORÁRIOS ESTÃO AQUI!
+// Eles devem estar antes da função principal do seu componente App.
+// =========================================================
 
 // Componente temporário para a página de Categorias
 const CategoriesPage = () => (
@@ -22,7 +30,7 @@ const CategoriesPage = () => (
   </div>
 );
 
-// Componente temporário para a página do Carrinho
+// Componente temporário para a página do Carrinho (se o usuário for para a rota /carrinho)
 const CartPage = () => (
   <div className="container mx-auto p-8 text-center min-h-screen bg-gray-100">
     <h2 className="text-4xl font-bold text-gray-800 mb-4">Página do Carrinho</h2>
@@ -30,7 +38,7 @@ const CartPage = () => (
   </div>
 );
 
-// NOVO: Componente temporário para uma página de Perfil protegida
+// Componente temporário para uma página de Perfil protegida
 const ProfilePage = () => {
   const { user } = useAuth(); // Acessa o usuário do contexto
   return (
@@ -40,8 +48,6 @@ const ProfilePage = () => {
         <div className="bg-white p-6 rounded-lg shadow-md inline-block">
           <p className="text-xl text-gray-700">Bem-vindo, <span className="font-semibold text-blue-600">{user.name || user.email}</span>!</p>
           <p className="text-lg text-gray-600 mt-2">Email: {user.email}</p>
-          {/* Adicione outras informações do perfil aqui */}
-          <p className="text-sm text-gray-500 mt-4">Esta é uma página que só pode ser acessada se você estiver logado.</p>
         </div>
       ) : (
         <p className="text-lg text-gray-600">Você precisa estar logado para ver esta página.</p>
@@ -51,6 +57,9 @@ const ProfilePage = () => {
 };
 
 
+// =========================================================
+// O restante do seu componente App()
+// =========================================================
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOverlayOpen, setIsSearchOverlayOpen] = useState(false);
@@ -149,10 +158,6 @@ function App() {
     setIsSearchOverlayOpen(false);
   };
 
-  // Removendo o loading/error da API de produtos aqui, pois AuthProvider já faz algo similar.
-  // Você pode ajustar a lógica de carregamento global se quiser uma tela de loading única.
-  // Por simplicidade, vamos deixar o loading de produtos no useEffect apenas.
-
   return (
     <Router>
       <Header onOpenCart={handleOpenCart} onOpenSearch={handleOpenSearchOverlay} onCloseSearch={handleCloseSearchOverlay} /> 
@@ -162,7 +167,7 @@ function App() {
           path="/" 
           element={
             <main className="container mx-auto p-4 bg-gray-100 min-h-screen">
-              {loading ? ( // Adicionando loading de produtos aqui dentro da rota
+              {loading ? (
                 <div className="flex justify-center items-center h-[calc(100vh-200px)] text-gray-800 text-2xl">
                   Carregando produtos...
                 </div>
@@ -184,13 +189,21 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         
-        {/* NOVO: Rota Protegida para o Perfil */}
         <Route 
           path="/profile" 
           element={
             <ProtectedRoute>
               <ProfilePage />
             </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/admin" 
+          element={
+            <AdminRoute>
+              <AdminDashboardPage />
+            </AdminRoute>
           } 
         />
       </Routes>

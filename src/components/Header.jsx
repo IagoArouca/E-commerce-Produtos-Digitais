@@ -5,7 +5,7 @@ import SearchBar from './SearchBar';
 import { useAuth } from '../context/AuthContext';
 
 function Header({ onOpenCart, onOpenSearch, onCloseSearch }) { 
-  const { user, isLoggedIn, logout } = useAuth();
+  const { user, isLoggedIn, isAdmin, logout } = useAuth(); // Importe isAdmin
 
   return (
     <header className="bg-gray-800 text-white p-4 shadow-md flex justify-between items-center z-30 relative">
@@ -26,8 +26,10 @@ function Header({ onOpenCart, onOpenSearch, onCloseSearch }) {
           </li>
           {isLoggedIn ? (
             <>
-              {/* NOVO: Link para o perfil */}
               <li><Link to="/profile" className="hover:text-blue-400 transition duration-300">Perfil</Link></li> 
+              {isAdmin && ( // Renderiza o link "Admin" APENAS se o usuário for admin
+                <li><Link to="/admin" className="hover:text-blue-400 transition duration-300 text-red-400 font-bold">Admin</Link></li>
+              )}
               <li>
                 <span className="text-blue-300">Olá, {user?.name || user?.email}!</span>
               </li>

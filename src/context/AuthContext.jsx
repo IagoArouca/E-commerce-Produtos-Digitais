@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }) => {
     user,
     token,
     isLoggedIn: !!user, // Booleano para verificar se está logado
+    isAdmin: user ? user.isAdmin : false,
     login,
     logout,
   };
