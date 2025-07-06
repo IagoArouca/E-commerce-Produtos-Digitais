@@ -1,11 +1,20 @@
+// src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 
 import Header from "./components/Header";
 import ProductList from "./components/ProductList";
 import CartSidebar from "./components/CartSidebar";
-import SearchOverlay from "./components/SearchOverlay"
+import SearchOverlay from "./components/SearchOverlay";
 
+import RegisterPage from './pages/RegisterPage';
+import LoginPage from './pages/LoginPage';
+
+// NOVO: Importe o ProtectedRoute
+import ProtectedRoute from './components/ProtectedRoute'; 
+
+// Componente temporário para a página de Categorias
 const CategoriesPage = () => (
   <div className="container mx-auto p-8 text-center min-h-screen bg-gray-100">
     <h2 className="text-4xl font-bold text-gray-800 mb-4">Página de Categorias</h2>
@@ -13,6 +22,7 @@ const CategoriesPage = () => (
   </div>
 );
 
+// Componente temporário para a página do Carrinho
 const CartPage = () => (
   <div className="container mx-auto p-8 text-center min-h-screen bg-gray-100">
     <h2 className="text-4xl font-bold text-gray-800 mb-4">Página do Carrinho</h2>
@@ -20,66 +30,81 @@ const CartPage = () => (
   </div>
 );
 
+// NOVO: Componente temporário para uma página de Perfil protegida
+const ProfilePage = () => {
+  const { user } = useAuth(); // Acessa o usuário do contexto
+  return (
+    <div className="container mx-auto p-8 text-center min-h-screen bg-gray-100">
+      <h2 className="text-4xl font-bold text-gray-800 mb-4">Página do Perfil</h2>
+      {user ? (
+        <div className="bg-white p-6 rounded-lg shadow-md inline-block">
+          <p className="text-xl text-gray-700">Bem-vindo, <span className="font-semibold text-blue-600">{user.name || user.email}</span>!</p>
+          <p className="text-lg text-gray-600 mt-2">Email: {user.email}</p>
+          {/* Adicione outras informações do perfil aqui */}
+          <p className="text-sm text-gray-500 mt-4">Esta é uma página que só pode ser acessada se você estiver logado.</p>
+        </div>
+      ) : (
+        <p className="text-lg text-gray-600">Você precisa estar logado para ver esta página.</p>
+      )}
+    </div>
+  );
+};
+
 
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOverlayOpen, setIsSearchOverlayOpen] = useState(false);
-  const [products, setProducts] = useState([]); // Novo estado para armazenar os produtos da API
-  const [loading, setLoading] = useState(true); // Estado para indicar que os dados estão sendo carregados
-  const [error, setError] = useState(null); // Estado para lidar com erros na requisição
-
-  // Inicializa cartItems tentando carregar do LocalStorage
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   const [cartItems, setCartItems] = useState(() => {
     try {
       const storedCartItems = localStorage.getItem('cartItems');
       return storedCartItems ? JSON.parse(storedCartItems) : [];
     } catch (e) {
       console.error("Erro ao carregar carrinho do LocalStorage:", e);
-      return []; // Retorna vazio em caso de erro
+      return [];
     }
   });
 
-  // Efeito para salvar cartItems no LocalStorage toda vez que ele mudar
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
-  }, [cartItems]); // Dependência: roda toda vez que cartItems mudar
- 
-  // Novo estado para o overlay de busca
-  // Função para buscar os produtos do backend
+  }, [cartItems]);
+
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response =  await fetch('http://localhost:3000/api/products'); // URL da sua API de produtos
+        const response = await fetch('http://localhost:3000/api/products');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setProducts(data); // Atualiza o estado 'products' com os dados da API
+        setProducts(data);
       } catch (err) {
         console.error("Erro ao buscar produtos:", err);
         setError("Não foi possível carregar os produtos. Tente novamente mais tarde.");
       } finally {
-        setLoading(false); // Finaliza o estado de carregamento
+        setLoading(false);
       }
     };
 
-    fetchProducts(); // Chama a função quando o componente é montado
-  }, []); // O array vazio [] garante que o useEffect rode apenas uma vez (no componentDidMount)
+    fetchProducts();
+  }, []);
 
   const handleAddToCart = (productToAdd) => {
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === productToAdd.id);
       if (existingItem) {
-        // Se o item já existe, incrementa a quantidade
         return prevItems.map(item =>
           item.id === productToAdd.id ? { ...item, quantity: item.quantity + 1 } : item
         );
       } else {
-        // Se o item não existe, adiciona com quantidade 1
         return [...prevItems, { ...productToAdd, quantity: 1 }];
       }
     });
-    setIsCartOpen(true); // Abre o carrinho automaticamente ao adicionar um item
+    setIsCartOpen(true);
   };
 
   const handleRemoveFromCart = (productId) => {
@@ -89,21 +114,27 @@ function App() {
   const handleUpdateQuantity = (productId, newQuantity) => {
     setCartItems(prevItems => {
       if (newQuantity <= 0) {
-        // Se a quantidade for 0 ou menos, remove o item
         return prevItems.filter(item => item.id !== productId);
       }
-      // Caso contrário, atualiza a quantidade
       return prevItems.map(item =>
         item.id === productId ? { ...item, quantity: newQuantity } : item
       );
     });
   };
 
-
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      alert("Seu carrinho está vazio. Adicione produtos antes de finalizar a compra!");
+      return;
+    }
+    alert("Funcionalidade de Checkout em desenvolvimento! Carrinho será esvaziado.");
+    setCartItems([]);
+    setIsCartOpen(false);
+  };
 
   const handleOpenCart = () => {
     setIsCartOpen(true);
-    setIsSearchOverlayOpen(false); // Garante que o overlay de busca fecha se o carrinho abrir
+    setIsSearchOverlayOpen(false);
   };
 
   const handleCloseCart = () => {
@@ -118,51 +149,50 @@ function App() {
     setIsSearchOverlayOpen(false);
   };
 
-  const handleCheckout = () => {
-    if (cartItems.length === 0) {
-      alert("Seu carrinho está vazio. Adicione produtos antes de finalizar a compra!");
-      return;
-    }
-    alert("Funcionalidade de Checkout em desenvolvimento! Carrinho será esvaziado.");
-    setCartItems([]); // Esvazia o carrinho após "checkout" simulado
-    setIsCartOpen(false); // Fecha o carrinho
-  };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100 text-gray-800 text-2xl">
-        Carregando produtos...
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-red-100 text-red-800 text-xl p-4">
-        Erro: {error}
-      </div>
-    );
-  }
+  // Removendo o loading/error da API de produtos aqui, pois AuthProvider já faz algo similar.
+  // Você pode ajustar a lógica de carregamento global se quiser uma tela de loading única.
+  // Por simplicidade, vamos deixar o loading de produtos no useEffect apenas.
 
   return (
-    <>
-      <Router> {/* O Router envolve toda a aplicação que usará rotas */}
+    <Router>
       <Header onOpenCart={handleOpenCart} onOpenSearch={handleOpenSearchOverlay} onCloseSearch={handleCloseSearchOverlay} /> 
       
-      {/* Aqui definimos nossas rotas */}
       <Routes>
         <Route 
           path="/" 
           element={
             <main className="container mx-auto p-4 bg-gray-100 min-h-screen">
-              <h2 className="text-3xl font-bold text-center my-8 text-gray-800">Nossos Produtos Digitais</h2>
-              <ProductList products={products} onAddToCart={handleAddToCart} />
+              {loading ? ( // Adicionando loading de produtos aqui dentro da rota
+                <div className="flex justify-center items-center h-[calc(100vh-200px)] text-gray-800 text-2xl">
+                  Carregando produtos...
+                </div>
+              ) : error ? (
+                <div className="flex justify-center items-center h-[calc(100vh-200px)] bg-red-100 text-red-800 text-xl p-4">
+                  Erro: {error}
+                </div>
+              ) : (
+                <>
+                  <h2 className="text-3xl font-bold text-center my-8 text-gray-800">Nossos Produtos Digitais</h2>
+                  <ProductList products={products} onAddToCart={handleAddToCart} />
+                </>
+              )}
             </main>
           } 
         />
-        <Route path="/categorias" element={<CategoriesPage />} /> {/* Rota para Categorias */}
-        <Route path="/carrinho" element={<CartPage />} />       {/* Rota para Carrinho */}
-        {/* Futuramente: <Route path="/produtos/:id" element={<ProductDetailPage />} /> */}
+        <Route path="/categorias" element={<CategoriesPage />} />
+        <Route path="/carrinho" element={<CartPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        
+        {/* NOVO: Rota Protegida para o Perfil */}
+        <Route 
+          path="/profile" 
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          } 
+        />
       </Routes>
 
       <CartSidebar 
@@ -175,7 +205,6 @@ function App() {
       />
       <SearchOverlay isOpen={isSearchOverlayOpen} onClick={handleCloseSearchOverlay} />
     </Router>
-    </>
   );
 }
 
