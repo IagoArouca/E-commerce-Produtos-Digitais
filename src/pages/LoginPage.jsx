@@ -32,7 +32,7 @@ function LoginPage() {
         throw new Error(data.message || 'Falha no login.');
       }
 
-      login({ _id: data._id, name: data.name, email: data.email }, data.token); // Usa a função login do contexto
+      login({ _id: data._id, name: data.name, email: data.email, isAdmin: data.isAdmin }, data.token); // Usa a função login do contexto
       navigate('/'); // Redireciona para a página inicial após o login
 
     } catch (err) {

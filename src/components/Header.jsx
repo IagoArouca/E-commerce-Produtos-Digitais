@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 
 function Header({ onOpenCart, onOpenSearch, onCloseSearch }) { 
   const { user, isLoggedIn, isAdmin, logout } = useAuth(); // Importe isAdmin
-
+  
   return (
     <header className="bg-gray-800 text-white p-4 shadow-md flex justify-between items-center z-30 relative">
       

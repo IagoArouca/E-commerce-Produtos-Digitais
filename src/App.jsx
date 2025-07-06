@@ -16,6 +16,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute'; // NOVO
 import AdminDashboardPage from './pages/AdminDashboardPage'; // NOVO
 
+import AdminProductListPage from './pages/AdminProductListPage'; 
+
 
 // =========================================================
 // VERIFIQUE SE ESTES COMPONENTES TEMPORÁRIOS ESTÃO AQUI!
@@ -203,6 +205,15 @@ function App() {
           element={
             <AdminRoute>
               <AdminDashboardPage />
+            </AdminRoute>
+          } 
+        />
+        {/* NOVO: Rota Protegida para Gerenciamento de Produtos do Admin */}
+        <Route 
+          path="/admin/products" 
+          element={
+            <AdminRoute> {/* Também protegida por AdminRoute */}
+              <AdminProductListPage />
             </AdminRoute>
           } 
         />
