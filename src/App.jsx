@@ -1,6 +1,6 @@
 // frontend/src/App.jsx
 import React, { useState } from 'react'; 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { useAuth } from './context/AuthContext'; // Ainda necessário para ProtectedRoute/AdminRoute
 
 import Header from "./components/Header";
@@ -29,7 +29,9 @@ const CategoriesPage = () => {
     { name: "Softwares", description: "Sistemas operacionais, aplicativos de produtividade e segurança.", icon: "💻" },
     { name: "Cursos Online", description: "Aprenda novas habilidades com cursos de diversas áreas.", icon: "🎓" },
     { name: "Música e Áudio", description: "Faixas, álbuns e efeitos sonoros para seus projetos.", icon: "🎶" },
+    { name: "Roupas", description: "Moda masculina, feminina e infantil para todas as ocasiões.", icon: "👕" },
     { name: "Designs e Templates", description: "Modelos para sites, apresentações e artes gráficas.", icon: "🎨" },
+    
   ];
 
   return (
