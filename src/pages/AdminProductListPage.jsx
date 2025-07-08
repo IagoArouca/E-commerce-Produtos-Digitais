@@ -1,65 +1,49 @@
 // frontend/src/pages/AdminProductListPage.jsx
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext'; // Para obter o token
+import React, { useState, useEffect, useCallback } from 'react'; // Adicione useCallback
+import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import { productApi } from '../services/api'; // NOVO: Importar o serviço de API
+import ProductForm from '../components/ProductForm'; // Importe o ProductForm
 
 function AdminProductListPage() {
-  const { token } = useAuth(); // Obtém o token do contexto de autenticação
+  const { token } = useAuth();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Estado para controlar a edição/criação de um produto
-  const [editingProduct, setEditingProduct] = useState(null); // null para novo produto, objeto para editar
-  const [isFormOpen, setIsFormOpen] = useState(false); // Controla a visibilidade do formulário
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
-  useEffect(() => {
-    fetchProducts();
-  }, [token]); // Refaz a busca se o token mudar (login/logout)
-
-  const fetchProducts = async () => {
+  // Usar useCallback para memoizar a função fetchProducts
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      // Requisita os produtos com o token de autenticação
-      const response = await fetch('http://localhost:3000/api/products', {
-        headers: {
-          'Authorization': `Bearer ${token}` // Inclui o token no cabeçalho
-        }
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
+      const data = await productApi.getProducts(token); // Usando o serviço de API
       setProducts(data);
     } catch (err) {
       console.error("Erro ao buscar produtos para admin:", err);
-      setError("Não foi possível carregar os produtos para administração.");
+      setError(err.message || "Não foi possível carregar os produtos para administração.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]); // Depende do token
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]); // Agora depende de fetchProducts memoizada
 
   const handleDeleteProduct = async (productId) => {
     if (!window.confirm('Tem certeza que deseja deletar este produto?')) {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:3000/api/products/${productId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}` // Envia o token para autorização
-        }
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      // Se a exclusão for bem-sucedida, atualiza a lista de produtos
+      await productApi.deleteProduct(productId, token); // Usando o serviço de API
       setProducts(products.filter(product => product._id !== productId));
       alert('Produto deletado com sucesso!');
     } catch (err) {
       console.error("Erro ao deletar produto:", err);
-      setError("Não foi possível deletar o produto.");
+      setError(err.message || "Não foi possível deletar o produto.");
     }
   };
 
@@ -69,14 +53,14 @@ function AdminProductListPage() {
   };
 
   const handleAddClick = () => {
-    setEditingProduct(null); // Define como null para indicar novo produto
+    setEditingProduct(null);
     setIsFormOpen(true);
   };
 
   const handleFormClose = () => {
     setIsFormOpen(false);
-    setEditingProduct(null); // Limpa o produto em edição
-    fetchProducts(); // Recarrega a lista de produtos após fechar o formulário (para ver as atualizações)
+    setEditingProduct(null); 
+    fetchProducts(); // Recarrega a lista
   };
 
   if (loading) {

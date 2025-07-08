@@ -27,7 +27,7 @@ function CartSidebar({ isOpen, onClose, cartItems, onRemoveItem, onUpdateQuantit
         ) : (
           <ul className="flex flex-col gap-4 mb-6 max-h-[calc(100vh-250px)] overflow-y-auto pr-2"> {/* Altura máxima e scroll, adicionado pr-2 para espaçamento da barra de rolagem */}
             {cartItems.map(item => (
-              <li key={item.id} className="flex items-center gap-4 border-b pb-4 last:border-b-0 last:pb-0"> {/* last: para remover borda do último item */}
+              <li key={item._id} className="flex items-center gap-4 border-b pb-4 last:border-b-0 last:pb-0"> {/* last: para remover borda do último item */}
                 <img src={item.imageUrl} alt={item.name} className="w-20 h-20 object-cover rounded-md flex-shrink-0" /> {/* flex-shrink-0 para img não encolher */}
                 <div className="flex-grow flex flex-col">
                   <h3 className="font-semibold text-gray-800 text-lg mb-1">{item.name}</h3>

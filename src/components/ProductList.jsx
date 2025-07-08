@@ -12,7 +12,7 @@ function ProductList({ products, onAddToCart }) {
       {/* O gap-6 ajuda no espaçamento e h-full nos cards garantirá a altura uniforme */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map(product => (
-          <ProductCard key={product.id} product={product} onAddToCart={onAddToCart} />
+          <ProductCard key={product._id} product={product} onAddToCart={onAddToCart} />
         ))}
       </div>
     </div>

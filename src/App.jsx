@@ -1,38 +1,64 @@
-// src/App.jsx
-// src/App.jsx
-import React, { useState, useEffect } from 'react';
+// frontend/src/App.jsx
+import React, { useState } from 'react'; 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
+import { useAuth } from './context/AuthContext'; // Ainda necessário para ProtectedRoute/AdminRoute
 
 import Header from "./components/Header";
-import ProductList from "./components/ProductList";
-import CartSidebar from "./components/CartSidebar";
 import SearchOverlay from "./components/SearchOverlay";
 
-import RegisterPage from './pages/RegisterPage';
-import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage'; // Confirme o nome do seu arquivo, pode ser 'Register.jsx' ou 'RegisterPage.jsx'
+import LoginPage from './pages/LoginPage';     // Confirme o nome do seu arquivo, pode ser 'Login.jsx' ou 'LoginPage.jsx'
+
 import ProtectedRoute from './components/ProtectedRoute'; 
+import AdminRoute from './components/AdminRoute'; 
 
-import AdminRoute from './components/AdminRoute'; // NOVO
-import AdminDashboardPage from './pages/AdminDashboardPage'; // NOVO
-
+import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminProductListPage from './pages/AdminProductListPage'; 
+import CheckoutPage from './pages/CheckoutPage'; 
 
+import MainLayout from './components/MainLayout'; // NOVO: Importar o MainLayout
 
 // =========================================================
-// VERIFIQUE SE ESTES COMPONENTES TEMPORÁRIOS ESTÃO AQUI!
-// Eles devem estar antes da função principal do seu componente App.
+// Componentes temporários (mantêm-se os mesmos)
 // =========================================================
+const CategoriesPage = () => {
+  // Categorias de exemplo (podem vir de uma API real no futuro)
+  const categories = [
+    { name: "Eletrônicos", description: "Smartphones, notebooks, fones de ouvido e mais.", icon: "📱" },
+    { name: "Livros Digitais", description: "E-books de ficção, não-ficção, tecnologia e autoajuda.", icon: "📚" },
+    { name: "Softwares", description: "Sistemas operacionais, aplicativos de produtividade e segurança.", icon: "💻" },
+    { name: "Cursos Online", description: "Aprenda novas habilidades com cursos de diversas áreas.", icon: "🎓" },
+    { name: "Música e Áudio", description: "Faixas, álbuns e efeitos sonoros para seus projetos.", icon: "🎶" },
+    { name: "Designs e Templates", description: "Modelos para sites, apresentações e artes gráficas.", icon: "🎨" },
+  ];
 
-// Componente temporário para a página de Categorias
-const CategoriesPage = () => (
-  <div className="container mx-auto p-8 text-center min-h-screen bg-gray-100">
-    <h2 className="text-4xl font-bold text-gray-800 mb-4">Página de Categorias</h2>
-    <p className="text-lg text-gray-600">Aqui você verá as categorias de produtos. Em breve, mais conteúdo!</p>
-  </div>
-);
+  return (
+    <div className="container mx-auto p-8 text-center min-h-screen bg-gray-100">
+      <h2 className="text-4xl font-bold text-gray-800 mb-8">Nossas Categorias de Produtos</h2>
+      <p className="text-lg text-gray-600 mb-10">Explore nossa vasta seleção de produtos digitais organizados por categoria.</p>
 
-// Componente temporário para a página do Carrinho (se o usuário for para a rota /carrinho)
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {categories.map((category, index) => (
+          <Link 
+            key={index} 
+            to={`/categorias/${category.name.toLowerCase().replace(/\s+/g, '-')}`} // Link fictício para a categoria
+            className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1 flex flex-col items-center justify-center text-left border border-gray-200"
+          >
+            <span className="text-5xl mb-4">{category.icon}</span>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">{category.name}</h3>
+            <p className="text-gray-700 text-center">{category.description}</p>
+            <span className="mt-4 text-blue-600 hover:text-blue-800 font-medium">Ver produtos &rarr;</span>
+          </Link>
+        ))}
+      </div>
+
+      <p className="text-md text-gray-500 mt-12">
+        * Clique em uma categoria para simular a visualização de produtos específicos. (Esta funcionalidade será implementada futuramente.)
+      </p>
+    </div>
+  );
+};
+
 const CartPage = () => (
   <div className="container mx-auto p-8 text-center min-h-screen bg-gray-100">
     <h2 className="text-4xl font-bold text-gray-800 mb-4">Página do Carrinho</h2>
@@ -40,9 +66,8 @@ const CartPage = () => (
   </div>
 );
 
-// Componente temporário para uma página de Perfil protegida
 const ProfilePage = () => {
-  const { user } = useAuth(); // Acessa o usuário do contexto
+  const { user } = useAuth();
   return (
     <div className="container mx-auto p-8 text-center min-h-screen bg-gray-100">
       <h2 className="text-4xl font-bold text-gray-800 mb-4">Página do Perfil</h2>
@@ -60,92 +85,17 @@ const ProfilePage = () => {
 
 
 // =========================================================
-// O restante do seu componente App()
+// Componente App Principal
 // =========================================================
 function App() {
+  // isCartOpen é gerenciado aqui para ser passado para o Header e MainLayout
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOverlayOpen, setIsSearchOverlayOpen] = useState(false);
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
-  const [cartItems, setCartItems] = useState(() => {
-    try {
-      const storedCartItems = localStorage.getItem('cartItems');
-      return storedCartItems ? JSON.parse(storedCartItems) : [];
-    } catch (e) {
-      console.error("Erro ao carregar carrinho do LocalStorage:", e);
-      return [];
-    }
-  });
 
-  useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
-  }, [cartItems]);
-
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/api/products');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setProducts(data);
-      } catch (err) {
-        console.error("Erro ao buscar produtos:", err);
-        setError("Não foi possível carregar os produtos. Tente novamente mais tarde.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
-
-  const handleAddToCart = (productToAdd) => {
-    setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === productToAdd.id);
-      if (existingItem) {
-        return prevItems.map(item =>
-          item.id === productToAdd.id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      } else {
-        return [...prevItems, { ...productToAdd, quantity: 1 }];
-      }
-    });
-    setIsCartOpen(true);
-  };
-
-  const handleRemoveFromCart = (productId) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
-  };
-
-  const handleUpdateQuantity = (productId, newQuantity) => {
-    setCartItems(prevItems => {
-      if (newQuantity <= 0) {
-        return prevItems.filter(item => item.id !== productId);
-      }
-      return prevItems.map(item =>
-        item.id === productId ? { ...item, quantity: newQuantity } : item
-      );
-    });
-  };
-
-  const handleCheckout = () => {
-    if (cartItems.length === 0) {
-      alert("Seu carrinho está vazio. Adicione produtos antes de finalizar a compra!");
-      return;
-    }
-    alert("Funcionalidade de Checkout em desenvolvimento! Carrinho será esvaziado.");
-    setCartItems([]);
-    setIsCartOpen(false);
-  };
-
+  // Funções de controle do carrinho/pesquisa que atualizam o estado isCartOpen/isSearchOverlayOpen
   const handleOpenCart = () => {
     setIsCartOpen(true);
-    setIsSearchOverlayOpen(false);
+    setIsSearchOverlayOpen(false); // Garante que a pesquisa feche ao abrir o carrinho
   };
 
   const handleCloseCart = () => {
@@ -154,6 +104,7 @@ function App() {
 
   const handleOpenSearchOverlay = () => {
     setIsSearchOverlayOpen(true);
+    setIsCartOpen(false); // Garante que o carrinho feche ao abrir a pesquisa
   };
 
   const handleCloseSearchOverlay = () => {
@@ -165,26 +116,10 @@ function App() {
       <Header onOpenCart={handleOpenCart} onOpenSearch={handleOpenSearchOverlay} onCloseSearch={handleCloseSearchOverlay} /> 
       
       <Routes>
+        {/* A rota principal agora renderiza o MainLayout, passando o controle do carrinho */}
         <Route 
           path="/" 
-          element={
-            <main className="container mx-auto p-4 bg-gray-100 min-h-screen">
-              {loading ? (
-                <div className="flex justify-center items-center h-[calc(100vh-200px)] text-gray-800 text-2xl">
-                  Carregando produtos...
-                </div>
-              ) : error ? (
-                <div className="flex justify-center items-center h-[calc(100vh-200px)] bg-red-100 text-red-800 text-xl p-4">
-                  Erro: {error}
-                </div>
-              ) : (
-                <>
-                  <h2 className="text-3xl font-bold text-center my-8 text-gray-800">Nossos Produtos Digitais</h2>
-                  <ProductList products={products} onAddToCart={handleAddToCart} />
-                </>
-              )}
-            </main>
-          } 
+          element={<MainLayout isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen} />} 
         />
         <Route path="/categorias" element={<CategoriesPage />} />
         <Route path="/carrinho" element={<CartPage />} />
@@ -208,28 +143,43 @@ function App() {
             </AdminRoute>
           } 
         />
-        {/* NOVO: Rota Protegida para Gerenciamento de Produtos do Admin */}
         <Route 
           path="/admin/products" 
           element={
-            <AdminRoute> {/* Também protegida por AdminRoute */}
+            <AdminRoute>
               <AdminProductListPage />
             </AdminRoute>
           } 
         />
+        <Route 
+          path="/checkout" 
+          element={
+            <ProtectedRoute>
+              <CheckoutPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route path="/categorias/:categoryName" element={<CategoryProductsPage />} /> 
       </Routes>
 
-      <CartSidebar 
-        isOpen={isCartOpen} 
-        onClose={handleCloseCart} 
-        cartItems={cartItems} 
-        onRemoveItem={handleRemoveFromCart} 
-        onUpdateQuantity={handleUpdateQuantity}
-        onCheckout={handleCheckout} 
-      />
+      {/* SearchOverlay permanece aqui, pois não está diretamente ligado ao fluxo do MainLayout */}
       <SearchOverlay isOpen={isSearchOverlayOpen} onClick={handleCloseSearchOverlay} />
     </Router>
   );
 }
+
+const CategoryProductsPage = () => {
+  const { categoryName } = useParams(); // Para pegar o nome da categoria da URL
+  
+  return (
+    <div className="container mx-auto p-8 text-center min-h-screen bg-gray-100">
+      <h2 className="text-4xl font-bold text-gray-800 mb-4">
+        Produtos em <span className="capitalize text-blue-600">{categoryName.replace(/-/g, ' ')}</span>
+      </h2>
+      <p className="text-lg text-gray-600">Aqui você verá os produtos da categoria "{categoryName.replace(/-/g, ' ')}".</p>
+      <p className="text-md text-gray-500 mt-4">Esta página ainda está em desenvolvimento. Volte à <Link to="/categorias" className="text-blue-500 hover:underline">Página de Categorias</Link>.</p>
+    </div>
+  );
+};
 
 export default App;

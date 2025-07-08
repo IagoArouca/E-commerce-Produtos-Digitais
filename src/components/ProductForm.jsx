@@ -1,5 +1,6 @@
 // frontend/src/components/ProductForm.jsx
 import React, { useState, useEffect } from 'react';
+import { productApi } from '../services/api'; // NOVO: Importar o serviço de API
 
 function ProductForm({ product, onClose, token }) {
   const [name, setName] = useState('');
@@ -9,7 +10,6 @@ function ProductForm({ product, onClose, token }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Preenche o formulário se um produto for passado (modo edição)
   useEffect(() => {
     if (product) {
       setName(product.name);
@@ -17,7 +17,6 @@ function ProductForm({ product, onClose, token }) {
       setImageUrl(product.imageUrl);
       setDescription(product.description || '');
     } else {
-      // Limpa o formulário para um novo produto
       setName('');
       setPrice('');
       setImageUrl('');
@@ -31,26 +30,15 @@ function ProductForm({ product, onClose, token }) {
     setLoading(true);
 
     const productData = { name, price: parseFloat(price), imageUrl, description };
-    const method = product ? 'PUT' : 'POST';
-    const url = product ? `http://localhost:3000/api/products/${product._id}` : 'http://localhost:3000/api/products';
 
     try {
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` // Inclui o token
-        },
-        body: JSON.stringify(productData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Erro na operação.');
+      if (product) {
+        await productApi.updateProduct(product._id, productData, token); // Usando o serviço de API para PUT
+        alert('Produto atualizado com sucesso!');
+      } else {
+        await productApi.createProduct(productData, token); // Usando o serviço de API para POST
+        alert('Produto adicionado com sucesso!');
       }
-
-      alert(`Produto ${product ? 'atualizado' : 'adicionado'} com sucesso!`);
       onClose(); // Fecha o formulário e recarrega a lista
     } catch (err) {
       console.error(`Erro ao ${product ? 'atualizar' : 'adicionar'} produto:`, err);
