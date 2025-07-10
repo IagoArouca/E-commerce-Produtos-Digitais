@@ -2,3 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
+.page-transition-wrapper {
+  position: relative;
+  width: 100%;
+  overflow-x: hidden; 
+  min-height: calc(100vh - 64px); 
+}
+
+.page-transition-enter,
+.page-transition-exit {
+  position: absolute; 
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; 
+}
+
+.page-transition-enter {
+  opacity: 0;
+  transform: translateX(100%); 
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateX(0%); 
+  transition: opacity 500ms ease-in-out, transform 500ms ease-in-out; 
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateX(0%);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateX(-100%); 
+  transition: opacity 500ms ease-in-out, transform 500ms ease-in-out; 
+
+}
+
+

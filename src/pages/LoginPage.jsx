@@ -1,7 +1,13 @@
-// src/pages/LoginPage.jsx
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext'; // Importe o hook useAuth
-import { useNavigate, Link } from 'react-router-dom'; // Para redirecionar e link para registro
+import { useAuth } from '../context/AuthContext'; 
+import { useNavigate, Link } from 'react-router-dom'; 
+
+const IconLockClosed = (props) => (
+  <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 1.5h11.55a.75.75 0 01.75.75v6.75a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75v-6.75a.75.75 0 01.75-.75z" />
+  </svg>
+);
+
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -9,8 +15,8 @@ function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth(); // Obtém a função de login do contexto
-  const navigate = useNavigate(); // Hook para navegação programática
+  const { login } = useAuth();
+  const navigate = useNavigate(); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,8 +38,8 @@ function LoginPage() {
         throw new Error(data.message || 'Falha no login.');
       }
 
-      login({ _id: data._id, name: data.name, email: data.email, isAdmin: data.isAdmin }, data.token); // Usa a função login do contexto
-      navigate('/'); // Redireciona para a página inicial após o login
+      login({ _id: data._id, name: data.name, email: data.email, isAdmin: data.isAdmin }, data.token); 
+      navigate('/'); 
 
     } catch (err) {
       console.error('Erro de login:', err);
@@ -44,44 +50,88 @@ function LoginPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Login</h2>
-        {error && <p className="bg-red-100 text-red-700 p-3 rounded-md mb-4 text-center">{error}</p>}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 font-body p-4">
+      <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border border-gray-100">
+        <div className="flex justify-center mb-6">
+          <IconLockClosed className="w-16 h-16 text-blue-600" />
+        </div>
+        <h2 className="text-4xl font-display text-center text-gray-900 mb-8 leading-tight">
+          Bem- <span className="text-blue-600">Vindo</span>
+        </h2>
+        
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg relative mb-6 shadow-sm flex items-center">
+            <svg className="h-6 w-6 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span className="block sm:inline font-medium">{error}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="email" className="block text-gray-700 text-sm font-semibold mb-2">Email:</label>
             <input
               type="email"
               id="email"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="
+                shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4
+                text-gray-800 leading-tight focus:outline-none focus:border-gray-300 transition-all duration-200
+                text-base
+              "
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">Senha:</label>
+          <div>
+            <label htmlFor="password" className="block text-gray-700 text-sm font-semibold mb-2">Senha:</label>
             <input
               type="password"
               id="password"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              className="
+                shadow-sm appearance-none border border-gray-300 rounded-lg w-full py-3 px-4
+                text-gray-800 leading-tight focus:outline-none focus:border-gray-300 transition-all duration-200
+                text-base
+              "
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
-          <div className="flex items-center justify-between">
+          
+          <div className="pt-2">
             <button
               type="submit"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+              className="
+                w-full bg-blue-600 text-white py-3 px-4 rounded-lg
+                hover:bg-blue-700 transition-all duration-300
+                text-lg font-bold shadow-md
+                transform hover:scale-105 active:scale-95
+                flex items-center justify-center
+              "
               disabled={loading}
             >
-              {loading ? 'Entrando...' : 'Entrar'}
+              {loading ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Entrando...
+                </>
+              ) : 'Entrar'}
             </button>
           </div>
-          <p className="text-center text-gray-600 text-sm mt-4">
-            Não tem uma conta? <Link to="/register" className="text-blue-500 hover:underline">Cadastre-se</Link>
+          
+          <p className="text-center text-gray-600 text-base mt-6">
+            Não tem uma conta?{' '}
+            <Link 
+              to="/register" 
+              className="text-blue-600 hover:text-blue-800 font-semibold hover:underline transition-colors duration-200"
+            >
+              Cadastre-se
+            </Link>
           </p>
         </form>
       </div>

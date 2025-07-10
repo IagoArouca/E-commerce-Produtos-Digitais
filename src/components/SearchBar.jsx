@@ -1,7 +1,5 @@
-// src/components/SearchBar.jsx
 import React, { useState } from 'react';
 
-// Recebe as props onOpen e onClose do pai (Header, que por sua vez recebe do App)
 function SearchBar({ onOpen, onClose }) { 
   const [termoDeBusca, setTermoDeBusca] = useState('');
 
@@ -11,7 +9,7 @@ function SearchBar({ onOpen, onClose }) {
 
   const handleSearchClick = () => {
     alert(`Buscando por: ${termoDeBusca}`);
-    onClose(); // Fecha o overlay após a busca ou se o botão for clicado
+    onClose(); 
   };
 
   return (
@@ -21,9 +19,8 @@ function SearchBar({ onOpen, onClose }) {
         placeholder="Buscar produtos..."
         value={termoDeBusca}
         onChange={handleInputChange}
-        // Adiciona os eventos onFocus e onBlur
-        onFocus={onOpen}  // Quando o input ganha foco, abre o overlay
-        onBlur={onClose}  // Quando o input perde foco, fecha o overlay
+        onFocus={onOpen} 
+        onBlur={onClose} 
         className="
           p-2 rounded-md border border-gray-600 bg-gray-700 text-white
           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent

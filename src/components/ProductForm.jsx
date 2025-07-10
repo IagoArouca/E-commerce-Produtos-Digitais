@@ -1,6 +1,5 @@
-// frontend/src/components/ProductForm.jsx
 import React, { useState, useEffect } from 'react';
-import { productApi } from '../services/api'; // NOVO: Importar o serviço de API
+import { productApi } from '../services/api'; 
 
 function ProductForm({ product, onClose, token }) {
   const [name, setName] = useState('');
@@ -33,13 +32,13 @@ function ProductForm({ product, onClose, token }) {
 
     try {
       if (product) {
-        await productApi.updateProduct(product._id, productData, token); // Usando o serviço de API para PUT
+        await productApi.updateProduct(product._id, productData, token); 
         alert('Produto atualizado com sucesso!');
       } else {
-        await productApi.createProduct(productData, token); // Usando o serviço de API para POST
+        await productApi.createProduct(productData, token); 
         alert('Produto adicionado com sucesso!');
       }
-      onClose(); // Fecha o formulário e recarrega a lista
+      onClose(); 
     } catch (err) {
       console.error(`Erro ao ${product ? 'atualizar' : 'adicionar'} produto:`, err);
       setError(err.message || `Erro ao ${product ? 'atualizar' : 'adicionar'} produto. Tente novamente.`);

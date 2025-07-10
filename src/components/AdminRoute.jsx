@@ -1,4 +1,3 @@
-// src/components/AdminRoute.jsx
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -14,9 +13,7 @@ const AdminRoute = ({ children }) => {
     );
   }
 
-  // Se não estiver logado OU não for admin, redireciona para o login (ou para a home, etc.)
   if (!isLoggedIn || !isAdmin) {
-    // Você pode redirecionar para uma página de "Acesso Negado" também
     return <Navigate to="/login" replace />; 
   }
 

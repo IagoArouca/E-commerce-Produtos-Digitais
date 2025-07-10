@@ -1,44 +1,59 @@
-// src/components/ProductCard.jsx
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 function ProductCard({ product, onAddToCart }) {
   if (!product || !product.name || !product.price || !product.imageUrl) {
     return <p className="text-center text-red-500">Produto inválido ou incompleto.</p>;
   }
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e) => {
+    e.stopPropagation(); 
+    e.preventDefault(); 
     onAddToCart(product);
   };
 
   return (
-    // Card principal: mantém o bg-white, shadow-lg, rounded-lg e h-full
-    <div className="bg-white rounded-lg shadow-lg flex flex-col overflow-hidden h-full">
-      {/* Contêiner da Imagem: Agora sem cor de fundo, apenas para estruturar */}
-      {/* w-full para ocupar toda a largura, h-48 para altura fixa */}
-      <div className="w-full h-48 flex justify-center items-center">
-        <img
-          src={product.imageUrl}
-          alt={product.name}
-          // A imagem ocupa 100% da largura e altura do contêiner
-          // object-cover para preencher o espaço, top-rounded para as bordas superiores
-          className="w-full h-full object-cover rounded-t-lg" // <--- Mudanças aqui
-        />
-      </div>
-
-      {/* Conteúdo do Produto - p-6 para padding */}
-      <div className="p-6 flex flex-col flex-grow items-center text-center">
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">{product.name}</h3>
-        <p className="text-2xl font-bold text-blue-600 mb-4">
-          R$ {product.price.toFixed(2).replace('.', ',')}
-        </p>
-        <div className="mt-auto">
-          <button
-            onClick={handleAddToCart}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105"
-          >
-            Adicionar ao Carrinho
-          </button>
+    <div
+      className="
+        bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col
+        border border-gray-100
+        hover:shadow-xl hover:scale-103 transition-all duration-300 ease-in-out
+      "
+    >
+      <Link to={`/produtos/${product._id}`} className="block flex-grow">
+        <div className="w-full h-48 flex justify-center items-center">
+          <img
+            src={product.imageUrl}
+            alt={product.name}
+            className="w-full h-full object-cover object-center rounded-t-lg"
+          />
         </div>
+
+        <div className="p-4 flex flex-col flex-grow items-center text-center font-body">
+          <h3 className="font-semibold text-xl text-gray-900 mb-2 truncate">
+            {product.name}
+          </h3>
+          <p className="text-gray-600 text-sm mb-3 line-clamp-2 flex-grow">
+            {product.description}
+          </p>
+          <p className="text-blue-500 text-2xl font-bold mt-auto">
+            R$ {product.price.toFixed(2).replace('.', ',')}
+          </p>
+        </div>
+      </Link>
+
+      <div className="p-4 border-t border-gray-100 mt-auto">
+        <button
+          onClick={handleAddToCart}
+          className="
+            w-full bg-gray-800 text-white py-2 px-4 rounded-md shadow-md
+            hover:bg-gray-900 active:bg-black
+            transition-all duration-300 font-semibold text-lg
+            transform hover:-translate-y-0.5
+          "
+        >
+          Adicionar ao Carrinho
+        </button>
       </div>
     </div>
   );

@@ -1,12 +1,12 @@
-// src/context/AuthContext.jsx
-import React, { createContext, useState, useEffect, useContext } from 'react';
 
-// 1. Cria o contexto
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authApi } from '../services/api'
+
+
 const AuthContext = createContext(null);
 
-// 2. Provedor do Contexto
 export const AuthProvider = ({ children }) => {
-  // Tenta carregar o usuário e o token do localStorage na inicialização
   const [user, setUser] = useState(() => {
     try {
       const storedUser = localStorage.getItem('user');
@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }) => {
     }
   });
 
-  // Salva o usuário e o token no localStorage sempre que eles mudam
   useEffect(() => {
     if (user) {
       localStorage.setItem('user', JSON.stringify(user));
@@ -40,24 +39,49 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user, token]);
 
-  // Função para fazer login
   const login = (userData, userToken) => {
     setUser(userData);
     setToken(userToken);
   };
 
-  // Função para fazer logout
   const logout = () => {
     setUser(null);
     setToken(null);
-    // O useEffect se encarregará de remover do localStorage
+
   };
 
-  // O valor que será disponibilizado para os componentes filhos
+  const updateProfile = async (newProfileData) => {
+    try {
+      if (!user?._id) {
+        throw new Error('ID de usuário não disponível para atualização.');
+      }
+      const response = await authApi.updateUserProfile(user._id, newProfileData, token);
+      const updatedUser = response.user; 
+      setUser(updatedUser); 
+      localStorage.setItem('user', JSON.stringify(updatedUser)); 
+      return updatedUser;
+    } catch (error) {
+      console.error('Erro ao atualizar perfil no AuthContext:', error);
+      throw new Error(error.message || 'Falha ao atualizar perfil');
+    }
+  };
+
+  const changePassword = async (currentPassword, newPassword) => {
+    try {
+      if (!user?._id) {
+        throw new Error('ID de usuário não disponível para alteração de senha.');
+      }
+      await authApi.changeUserPassword(user._id, { currentPassword, newPassword }, token);
+      return true; 
+    } catch (error) {
+      console.error('Erro ao alterar senha no AuthContext:', error);
+      throw new Error(error.message || 'Falha ao alterar senha');
+    }
+  };
   const authContextValue = {
     user,
     token,
-    isLoggedIn: !!user, // Booleano para verificar se está logado
+    isLoggedIn: !!user, 
     isAdmin: user ? user.isAdmin : false,
     login,
     logout,
@@ -70,7 +94,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// 3. Hook customizado para usar o contexto facilmente
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

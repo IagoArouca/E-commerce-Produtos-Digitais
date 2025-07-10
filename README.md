@@ -1,12 +1,33 @@
-# React + Vite
+E-commerce Frontend (ReactJS)
+Este é o repositório do frontend do nosso projeto de e-commerce, construído com ReactJS e estilizado com Tailwind CSS. Ele oferece uma experiência de compra moderna, responsiva e intuitiva para nossos clientes.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Visão Geral
+Este frontend interage com uma API RESTful (do seu backend) para exibir produtos, gerenciar o carrinho de compras, processar autenticação de usuários e permitir funcionalidades de administrador. O design é focado em minimalismo e profissionalismo, garantindo uma navegação coesa e agradável.
 
-Currently, two official plugins are available:
+Funcionalidades Principais
+Página Inicial: Destaque de produtos, navegação fácil.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Detalhes do Produto: Visualização completa de informações do produto, incluindo preço, descrição, categoria e disponibilidade.
 
-## Expanding the ESLint configuration
+Carrinho de Compras: Adição, remoção e atualização de itens no carrinho.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Autenticação de Usuário: Login e Registro para gerenciar contas de usuário.
+
+Gerenciamento de Usuário: Página de perfil para usuários logados.
+
+Painel Administrativo: Funcionalidades exclusivas para administradores (ex: gerenciamento de produtos, usuários).
+
+Pesquisa Dinâmica: Busca por produtos com feedback visual.
+
+Design Responsivo: Otimizado para desktop, tablet e celular usando Tailwind CSS.
+
+Coerência de UX/UI: Elementos interativos com transições suaves e foco claro.
+
+Tecnologias Utilizadas
+ReactJS: Biblioteca JavaScript para construção da interface do usuário.
+
+React Router DOM: Para gerenciamento de rotas e navegação.
+
+Tailwind CSS: Framework CSS utilitário para estilização rápida e responsiva, focado em minimalismo.
+
+Context API / Custom Hooks: Para gerenciamento de estado global (ex: autenticação, carrinho).
