@@ -1,11 +1,10 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-
-
-const request = async (endpoint, { method = 'GET', body = null, token = null } = {}) => {
-  const headers = {
-    'Content-Type': 'application/json',
-  };
+const request = async (endpoint, { method = 'GET', body = null, token = null, isFormData = false } = {}) => {
+  const headers = {}; 
+  if (!isFormData) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
@@ -17,7 +16,7 @@ const request = async (endpoint, { method = 'GET', body = null, token = null } =
   };
 
   if (body) {
-    config.body = JSON.stringify(body);
+    config.body = isFormData ? body : JSON.stringify(body);
   }
 
   try {
@@ -28,7 +27,7 @@ const request = async (endpoint, { method = 'GET', body = null, token = null } =
       throw new Error(data.message || `Erro na requisição: ${response.status}`);
     }
 
-    return data; 
+    return data;
   } catch (error) {
     console.error(`Erro na requisição para ${endpoint}:`, error);
     throw error;
@@ -44,11 +43,11 @@ const productApi = {
   },
   createProduct: async (productData, token) => {
     if (!token) throw new Error('Token de autenticação necessário para criar produto.');
-    return request('/products', { method: 'POST', body: productData, token });
+    return request('/products', { method: 'POST', body: productData, token, isFormData: true });
   },
   updateProduct: async (id, productData, token) => {
     if (!token) throw new Error('Token de autenticação necessário para atualizar produto.');
-    return request(`/products/${id}`, { method: 'PUT', body: productData, token });
+    return request(`/products/${id}`, { method: 'PUT', body: productData, token, isFormData: true });
   },
   deleteProduct: async (id, token) => {
     if (!token) throw new Error('Token de autenticação necessário para deletar produto.');
@@ -73,4 +72,4 @@ const authApi = {
   },
 };
 
-export { productApi, authApi }; 
+export { productApi, authApi };
