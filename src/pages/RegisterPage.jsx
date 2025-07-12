@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext'; 
-import { useNavigate, Link } from 'react-router-dom'; 
+import { useAuth } from '../context/AuthContext';
+import { useNavigate, Link } from 'react-router-dom';
+import { authApi } from '../services/api'; 
 
 const IconUserPlus = (props) => (
   <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -18,12 +19,12 @@ function RegisterPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth(); 
-  const navigate = useNavigate(); 
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); 
+    setError('');
     setLoading(true);
 
     if (password !== confirmPassword) {
@@ -33,22 +34,10 @@ function RegisterPage() {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Falha no registro.');
-      }
-      login({ _id: data._id, name: data.name, email: data.email, isAdmin: data.isAdmin }, data.token); 
+      const data = await authApi.register({ name, email, password });
+      login({ _id: data._id, name: data.name, email: data.email, isAdmin: data.isAdmin }, data.token);
       navigate('/');
-      
+
     } catch (err) {
       console.error('Erro de registro:', err);
       setError(err.message || 'Erro ao registrar. Tente novamente ou verifique se o e-mail já está em uso.');
@@ -66,7 +55,7 @@ function RegisterPage() {
         <h2 className="text-4xl font-display text-center text-gray-900 mb-8 leading-tight">
           Crie sua  <span className="text-blue-600">Conta!</span>
         </h2>
-        
+
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg relative mb-6 shadow-sm flex items-center">
             <svg className="h-6 w-6 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -137,7 +126,7 @@ function RegisterPage() {
               required
             />
           </div>
-          
+
           <div className="pt-2">
             <button
               type="submit"
@@ -161,11 +150,11 @@ function RegisterPage() {
               ) : 'Cadastrar'}
             </button>
           </div>
-          
+
           <p className="text-center text-gray-600 text-base mt-6">
             Já tem uma conta?{' '}
-            <Link 
-              to="/login" 
+            <Link
+              to="/login"
               className="text-blue-600 hover:text-blue-800 font-semibold hover:underline transition-colors duration-200"
             >
               Faça Login

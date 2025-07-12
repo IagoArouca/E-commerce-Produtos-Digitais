@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext'; 
-import { useNavigate, Link } from 'react-router-dom'; 
+import { useAuth } from '../context/AuthContext';
+import { useNavigate, Link } from 'react-router-dom';
+import { authApi } from '../services/api';
 
 const IconLockClosed = (props) => (
   <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -16,7 +17,7 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,22 +25,9 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Falha no login.');
-      }
-
-      login({ _id: data._id, name: data.name, email: data.email, isAdmin: data.isAdmin }, data.token); 
-      navigate('/'); 
+      const data = await authApi.login({ email, password });
+      login({ _id: data._id, name: data.name, email: data.email, isAdmin: data.isAdmin }, data.token);
+      navigate('/');
 
     } catch (err) {
       console.error('Erro de login:', err);
@@ -58,7 +46,7 @@ function LoginPage() {
         <h2 className="text-4xl font-display text-center text-gray-900 mb-8 leading-tight">
           Bem- <span className="text-blue-600">Vindo</span>
         </h2>
-        
+
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg relative mb-6 shadow-sm flex items-center">
             <svg className="h-6 w-6 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -99,7 +87,7 @@ function LoginPage() {
               required
             />
           </div>
-          
+
           <div className="pt-2">
             <button
               type="submit"
@@ -123,11 +111,11 @@ function LoginPage() {
               ) : 'Entrar'}
             </button>
           </div>
-          
+
           <p className="text-center text-gray-600 text-base mt-6">
             Não tem uma conta?{' '}
-            <Link 
-              to="/register" 
+            <Link
+              to="/register"
               className="text-blue-600 hover:text-blue-800 font-semibold hover:underline transition-colors duration-200"
             >
               Cadastre-se
