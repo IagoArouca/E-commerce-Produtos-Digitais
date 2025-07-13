@@ -2,6 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 
+const IconClothes = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.05 0 0 0-3.072-3.072L3 10.5l2.846-.813a4.5 4.05 0 0 0 3.072-3.072L9 3.75l.813 2.846a4.5 4.05 0 0 0 3.072 3.072L15 10.5l-2.846.813a4.5 4.05 0 0 0-3.072 3.072Zm0 0 2.123 2.123"/></svg>);
+
+
 const IconBonnet = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.05 0 0 0-3.072-3.072L3 10.5l2.846-.813a4.5 4.05 0 0 0 3.072-3.072L9 3.75l.813 2.846a4.5 4.05 0 0 0 3.072 3.072L15 10.5l-2.846.813a4.5 4.05 0 0 0-3.072 3.072Zm0 0 2.123 2.123M21 12c-1.251-1.391-2.652-2.585-4.223-3.486L15.2 6.744a5.137 5.093 0 0 1-4.004-4.887V2.25M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>); // Ícone de chapéu/boné
 
 const IconTshirt = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18M4.5 19.5h15"/></svg>); // Ícone de camiseta/blusa
@@ -21,12 +24,12 @@ const IconHeadwear = (props) => (<svg {...props} xmlns="http://www.w3.org/2000/s
 
 const CategoriesPage = () => {
   const categoryIcons = {
-    "Bones": IconHeadwear, 
+    "Bones": IconHeadwear,
     "Blusas": IconTshirt,
     "Óculos": IconGlasses,
     "Calças": IconClothes, 
     "Calçados": IconSneakers,
-    "Acessórios": IconJewelry, 
+    "Acessórios": IconJewelry,
     "Relógios": IconWatch,
     "Bolsas": IconBag,
   };
