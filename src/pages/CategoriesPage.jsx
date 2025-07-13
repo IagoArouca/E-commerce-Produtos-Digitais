@@ -36,22 +36,21 @@ const CategoriesPage = () => {
 
   const categories = [
     { name: "Bones", description: "Estilo e proteção para sua cabeça.", iconName: "Bones" },
-    { name: "Blusas", description: "Conforto e moda para todas as estações.", iconName: "Blusas" },
+    { name: "Blusas", description: "Conforto para todas as estações.", iconName: "Blusas" },
     { name: "Óculos", description: "Proteção e estilo para seus olhos.", iconName: "Óculos" },
     { name: "Calças", description: "Diversos modelos para seu dia a dia.", iconName: "Calças" },
-    { name: "Calçados", description: "Conforto e tendência para seus pés.", iconName: "Calçados" },
+    { name: "Calçados", description: "Conforto para seus pés.", iconName: "Calçados" },
     { name: "Acessórios", description: "Complemente seu visual com estilo.", iconName: "Acessórios" },
     { name: "Relógios", description: "Sofisticação e funcionalidade no seu pulso.", iconName: "Relógios" },
-    { name: "Bolsas", description: "Praticidade e elegância para carregar seus itens.", iconName: "Bolsas" },
   ];
 
   return (
     <div className="container mx-auto px-4 py-12 text-center min-h-screen bg-gray-50 font-body">
       <h2 className="text-4xl md:text-5xl font-display text-gray-900 mb-6 leading-tight">
-        Explore Nossas <span className="text-blue-600">Categorias de Roupas</span>
+        Explore Nossas <span className="text-blue-600">Categorias</span>
       </h2>
       <p className="text-lg text-gray-700 mb-12 max-w-2xl mx-auto">
-        Descubra um universo de produtos de moda selecionados para você.
+        Descubra um universo de produtos selecionados para você.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {categories.map((category, index) => {
